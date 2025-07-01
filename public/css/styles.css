@@ -1,3 +1,4 @@
+/* public/css/styles.css */
 body {
   display: flex;
   height: 100vh;
@@ -41,4 +42,34 @@ body {
 .form-container a {
   color: #0078d4;
   text-decoration: none;
+}
+
+/* Dashboard & Shopping pages */
+.dashboard, .shopping {
+  text-align: center;
+}
+.btn-group .btn {
+  display: inline-block;
+  margin: 0 .5rem;
+  padding: .75rem 1.5rem;
+  background: #0078d4;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background .2s;
+}
+.btn-group .btn:hover {
+  background: #005a9e;
+}
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.product {
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }

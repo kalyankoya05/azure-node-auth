@@ -27,11 +27,15 @@ app.use(express.static(path.join(__dirname, "public")));
 async function getDb() {
   return mysql.createConnection({
     host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT, 10) || 3306,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    // enable TLS if required by Azure
-    ssl: { rejectUnauthorized: true },
+    ssl: {
+      // allow TLS to Azure MySQL
+      rejectUnauthorized: true,
+    },
+    connectTimeout: 10000, // 10 seconds
   });
 }
 
