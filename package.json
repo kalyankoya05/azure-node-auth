@@ -2,10 +2,10 @@
   "name": "azure-node-auth",
   "version": "1.0.0",
   "main": "index.js",
-"scripts": {
-  "start": "node app.js",
-  "test": "echo \"No tests specified\" && exit 0"
-},
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,6 +15,7 @@
     "body-parser": "^2.2.0",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "mysql2": "^3.14.1"
   }
 }
