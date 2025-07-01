@@ -5,30 +5,109 @@
   <meta charset="UTF-8" />
   <title>Shopping</title>
   <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* Grid container */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    /* Card styling */
+    .product {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .product img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+
+    .product .info {
+      padding: 0.5rem;
+    }
+
+    .product .info h4 {
+      margin: .4rem 0;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="shopping">
-    <h1>Hello, <span id="user-email"></span>!</h1>
-    <p>Here are some products for you:</p>
-    <div class="products">
-      <div class="product">Product A</div>
-      <div class="product">Product B</div>
-      <div class="product">Product C</div>
-    </div>
-    <form action="/logout" method="post" style="margin-top:1rem;">
-      <button type="submit">Log Out</button>
-    </form>
-  </div>
+  <h1 style="text-align:center; font-family:Arial,sans-serif;">🛍️ Welcome to the Store</h1>
+  <div class="products" id="product-grid"></div>
 
   <script>
-    // fetch user email from session via an endpoint (could be improved)
-    fetch('/health') // dummy GET to ensure session is active
-      .then(() => {
-        // session exists; extract from cookie or ask server-side rendering in future
-        // For simplicity, just show "You" or enhance to serve via templating
-        document.getElementById('user-email').textContent = 'valued customer';
-      });
+    // 30 product definitions
+    const products = [
+      // Fashion (15)
+      { name: "Red Dress", tag: "red dress" },
+      { name: "Blue Jeans", tag: "blue jeans" },
+      { name: "Leather Jacket", tag: "leather jacket" },
+      { name: "Summer Hat", tag: "summer hat" },
+      { name: "Sneakers", tag: "sneakers" },
+      { name: "Sun Glasses", tag: "sunglasses" },
+      { name: "Wrist Watch", tag: "fashion watch" },
+      { name: "Backpack", tag: "fashion backpack" },
+      { name: "Scarf", tag: "scarf fashion" },
+      { name: "Handbag", tag: "handbag" },
+      { name: "High Heels", tag: "high heels" },
+      { name: "Graphic Tee", tag: "graphic t shirt" },
+      { name: "Denim Jacket", tag: "denim jacket" },
+      { name: "Beanie", tag: "beanie" },
+      { name: "Formal Suit", tag: "formal suit" },
+
+      // Electronics (15)
+      { name: "Smartphone", tag: "smartphone" },
+      { name: "Laptop", tag: "laptop" },
+      { name: "Headphones", tag: "headphones" },
+      { name: "Smart TV", tag: "smart tv" },
+      { name: "Bluetooth Speaker", tag: "bluetooth speaker" },
+      { name: "Digital Camera", tag: "digital camera" },
+      { name: "Drone", tag: "drone" },
+      { name: "Smartwatch", tag: "smartwatch" },
+      { name: "Gaming Console", tag: "gaming console" },
+      { name: "Wireless Mouse", tag: "wireless mouse" },
+      { name: "Mechanical Keyboard", tag: "mechanical keyboard" },
+      { name: "VR Headset", tag: "vr headset" },
+      { name: "Action Camera", tag: "action camera" },
+      { name: "E-Reader", tag: "e reader" },
+      { name: "Portable Charger", tag: "power bank" }
+    ];
+
+    const grid = document.getElementById("product-grid");
+
+    products.forEach(p => {
+      // create card
+      const card = document.createElement("div");
+      card.className = "product";
+
+      // image from Unsplash by tag
+      const img = document.createElement("img");
+      // each reload may give a fresh, relevant photo
+      img.src = `https://source.unsplash.com/300x300/?${encodeURIComponent(p.tag)}`;
+      img.alt = p.name;
+
+      // info container
+      const info = document.createElement("div");
+      info.className = "info";
+
+      const title = document.createElement("h4");
+      title.textContent = p.name;
+
+      info.appendChild(title);
+      card.append(img, info);
+      grid.appendChild(card);
+    });
   </script>
 </body>
 
