@@ -2,28 +2,49 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Shopping</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <title>Dashboard Shopping</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
 <body>
-  <div class="shopping">
-    <h1>Welcome, <span id="user-email">Customer</span>!</h1>
-    <div class="products" id="product-grid"></div>
-    <form action="/logout" method="post">
-      <button class="logout-btn" type="submit">Log Out</button>
-    </form>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>My Shop</h2>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </aside>
+
+    <!-- Main Content -->
+    <section class="main-content">
+      <header class="main-header">
+        <h1>Products</h1>
+      </header>
+      <div class="products" id="product-grid"></div>
+    </section>
   </div>
 
   <script>
+    // Sample 30 products
     const products = [
-      /* same 30 items as before */
-      { name: "Red Dress", tag: "red dress" }, /* …and so on… */
-      { name: "Portable Charger", tag: "power bank" }
+      { name: "Red Dress", tag: "red dress" }, { name: "Blue Jeans", tag: "blue jeans" },
+      { name: "Leather Jacket", tag: "leather jacket" }, { name: "Summer Hat", tag: "summer hat" },
+      { name: "Sneakers", tag: "sneakers" }, { name: "Sunglasses", tag: "sunglasses" },
+      { name: "Fashion Watch", tag: "fashion watch" }, { name: "Backpack", tag: "backpack" },
+      { name: "Scarf", tag: "scarf fashion" }, { name: "Handbag", tag: "handbag" },
+      { name: "High Heels", tag: "high heels" }, { name: "Graphic Tee", tag: "graphic t shirt" },
+      { name: "Denim Jacket", tag: "denim jacket" }, { name: "Beanie", tag: "beanie" },
+      { name: "Formal Suit", tag: "formal suit" }, { name: "Smartphone", tag: "smartphone" },
+      { name: "Laptop", tag: "laptop" }, { name: "Headphones", tag: "headphones" },
+      { name: "Smart TV", tag: "smart tv" }, { name: "Bluetooth Speaker", tag: "bluetooth speaker" },
+      { name: "Digital Camera", tag: "digital camera" }, { name: "Drone", tag: "drone" },
+      { name: "Smartwatch", tag: "smartwatch" }, { name: "Gaming Console", tag: "gaming console" },
+      { name: "Wireless Mouse", tag: "wireless mouse" }, { name: "Mechanical Keyboard", tag: "mechanical keyboard" },
+      { name: "VR Headset", tag: "vr headset" }, { name: "Action Camera", tag: "action camera" },
+      { name: "E-Reader", tag: "e reader" }, { name: "Portable Charger", tag: "power bank" }
     ];
 
-    // Fill grid
+    // Render products
     const grid = document.getElementById("product-grid");
     products.forEach(p => {
       const card = document.createElement("div");
@@ -34,7 +55,7 @@
       img.alt = p.name;
 
       const info = document.createElement("div");
-      info.className = "info";
+      info.className = "product-info";
       const title = document.createElement("h4");
       title.textContent = p.name;
       info.appendChild(title);
@@ -43,10 +64,12 @@
       grid.appendChild(card);
     });
 
-    // Display email
-    const params = new URLSearchParams(location.search);
-    document.getElementById("user-email").textContent =
-      params.get("email") || "Valued Customer";
+    // Logout: clear session & redirect
+    function logout() {
+      fetch('/logout', { method: 'POST' })
+        .then(() => window.location = '/')
+        .catch(() => window.location = '/');
+    }
   </script>
 </body>
 
