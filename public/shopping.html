@@ -1,114 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
+/* Reset & Base */
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+body {
+font-family: Arial, sans-serif;
+background: #f0f2f5;
+color: #333;
+}
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Shopping</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-  <style>
-    /* Grid container */
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-    }
+/* Page container */
+.shopping {
+max-width: 1200px;
+margin: 2rem auto;
+padding: 0 1rem;
+}
 
-    /* Card styling */
-    .product {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      overflow: hidden;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    }
+/* Header */
+.shopping h1 {
+text-align: center;
+font-size: 2.5rem;
+margin-bottom: 1rem;
+}
 
-    .product img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-    }
+/* Grid */
+.products {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+gap: 1.5rem;
+margin-top: 1.5rem;
+}
 
-    .product .info {
-      padding: 0.5rem;
-    }
+/* Card */
+.product {
+background: white;
+border-radius: 8px;
+overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+transition: transform 0.2s, box-shadow 0.2s;
+}
+.product:hover {
+transform: translateY(-4px);
+box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
 
-    .product .info h4 {
-      margin: .4rem 0;
-      font-size: 1rem;
-    }
-  </style>
-</head>
+/* Image */
+.product img {
+display: block;
+width: 100%;
+height: 160px;
+object-fit: cover;
+}
 
-<body>
-  <h1 style="text-align:center; font-family:Arial,sans-serif;">🛍️ Welcome to the Store</h1>
-  <div class="products" id="product-grid"></div>
+/* Info block */
+.product .info {
+padding: 0.75rem;
+text-align: center;
+}
+.product .info h4 {
+font-size: 1rem;
+margin-bottom: 0.5rem;
+}
 
-  <script>
-    // 30 product definitions
-    const products = [
-      // Fashion (15)
-      { name: "Red Dress", tag: "red dress" },
-      { name: "Blue Jeans", tag: "blue jeans" },
-      { name: "Leather Jacket", tag: "leather jacket" },
-      { name: "Summer Hat", tag: "summer hat" },
-      { name: "Sneakers", tag: "sneakers" },
-      { name: "Sun Glasses", tag: "sunglasses" },
-      { name: "Wrist Watch", tag: "fashion watch" },
-      { name: "Backpack", tag: "fashion backpack" },
-      { name: "Scarf", tag: "scarf fashion" },
-      { name: "Handbag", tag: "handbag" },
-      { name: "High Heels", tag: "high heels" },
-      { name: "Graphic Tee", tag: "graphic t shirt" },
-      { name: "Denim Jacket", tag: "denim jacket" },
-      { name: "Beanie", tag: "beanie" },
-      { name: "Formal Suit", tag: "formal suit" },
-
-      // Electronics (15)
-      { name: "Smartphone", tag: "smartphone" },
-      { name: "Laptop", tag: "laptop" },
-      { name: "Headphones", tag: "headphones" },
-      { name: "Smart TV", tag: "smart tv" },
-      { name: "Bluetooth Speaker", tag: "bluetooth speaker" },
-      { name: "Digital Camera", tag: "digital camera" },
-      { name: "Drone", tag: "drone" },
-      { name: "Smartwatch", tag: "smartwatch" },
-      { name: "Gaming Console", tag: "gaming console" },
-      { name: "Wireless Mouse", tag: "wireless mouse" },
-      { name: "Mechanical Keyboard", tag: "mechanical keyboard" },
-      { name: "VR Headset", tag: "vr headset" },
-      { name: "Action Camera", tag: "action camera" },
-      { name: "E-Reader", tag: "e reader" },
-      { name: "Portable Charger", tag: "power bank" }
-    ];
-
-    const grid = document.getElementById("product-grid");
-
-    products.forEach(p => {
-      // create card
-      const card = document.createElement("div");
-      card.className = "product";
-
-      // image from Unsplash by tag
-      const img = document.createElement("img");
-      // each reload may give a fresh, relevant photo
-      img.src = `https://source.unsplash.com/300x300/?${encodeURIComponent(p.tag)}`;
-      img.alt = p.name;
-
-      // info container
-      const info = document.createElement("div");
-      info.className = "info";
-
-      const title = document.createElement("h4");
-      title.textContent = p.name;
-
-      info.appendChild(title);
-      card.append(img, info);
-      grid.appendChild(card);
-    });
-  </script>
-</body>
-
-</html>
+/* Logout button */
+.logout-btn {
+display: block;
+margin: 2rem auto 0;
+padding: 0.75rem 1.5rem;
+background: #e53935;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+.logout-btn:hover {
+background: #c62828;
+}
