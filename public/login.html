@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Login</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
 <body>
@@ -15,6 +15,16 @@
     <button type="submit">Sign In</button>
     <p>Don't have an account? <a href="/register">Register</a></p>
   </form>
+
+  <script>
+    // Show popup if redirected after registration
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('registered') === '1') {
+      alert('Registered successfully! Please log in.');
+      // Remove the query so refreshing won't pop it again
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  </script>
 </body>
 
 </html>

@@ -5,34 +5,9 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 
 const app = express();
-
-// parse URL-encoded bodies (form posts)
 app.use(express.urlencoded({ extended: false }));
-
-// serve all files in /public
 app.use(express.static(path.join(__dirname, "public")));
 
-// Health check endpoint
-app.get("/health", (_, res) => {
-  res.status(200).send("OK");
-});
-
-// Dashboard route (default page)
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Registration page
-app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "register.html"));
-});
-
-// Login page
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
-});
-
-// Get a new DB connection
 async function getDb() {
   return mysql.createConnection({
     host: process.env.DB_HOST,
@@ -42,21 +17,43 @@ async function getDb() {
   });
 }
 
-// Handle registration form POST
+// Health endpoint
+app.get("/health", (_, res) => res.send("OK"));
+
+// Dashboard
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
+
+// Register & Login pages
+app.get("/register", (_, res) => {
+  res.sendFile(path.join(__dirname, "public/register.html"));
+});
+app.get("/login", (_, res) => {
+  res.sendFile(path.join(__dirname, "public/login.html"));
+});
+
+// Shopping page
+app.get("/shopping", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/shopping.html"));
+});
+
+// Handle registration
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).send("Email and password required");
-  }
+  if (!email || !password)
+    return res.status(400).send("Email & password required");
 
   const hash = await bcrypt.hash(password, 10);
   const db = await getDb();
+
   try {
     await db.execute("INSERT INTO users(email, password_hash) VALUES(?, ?)", [
       email,
       hash,
     ]);
-    res.redirect("/login");
+    // Redirect with a flag for the popup
+    res.redirect("/login?registered=1");
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
       res.status(409).send("Email already registered");
@@ -69,12 +66,11 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Handle login form POST
+// Handle login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).send("Email and password required");
-  }
+  if (!email || !password)
+    return res.status(400).send("Email & password required");
 
   const db = await getDb();
   try {
@@ -82,16 +78,14 @@ app.post("/login", async (req, res) => {
       "SELECT password_hash FROM users WHERE email = ?",
       [email]
     );
-    if (rows.length === 0) {
+    if (
+      !rows.length ||
+      !(await bcrypt.compare(password, rows[0].password_hash))
+    ) {
       return res.status(401).send("Invalid email or password");
     }
-
-    const valid = await bcrypt.compare(password, rows[0].password_hash);
-    if (!valid) {
-      return res.status(401).send("Invalid email or password");
-    }
-
-    res.send(`Welcome back, ${email}!`);
+    // On success, redirect to shopping with the email in query
+    res.redirect(`/shopping?email=${encodeURIComponent(email)}`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -100,12 +94,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// 404 for any other routes
-app.use((_, res) => {
-  res.status(404).send("Page not found");
-});
+// 404 catch-all
+app.use((_, res) => res.status(404).send("Page not found"));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Listening on port ${port}...`);
-});
+app.listen(port, () => console.log(`Listening on port ${port}...`));
