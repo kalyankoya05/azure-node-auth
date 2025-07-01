@@ -3,74 +3,98 @@ const express = require("express");
 const mysql = require("mysql2/promise");
 const bcrypt = require("bcrypt");
 const path = require("path");
+const session = require("express-session");
 
 const app = express();
+
+// parse URL-encoded bodies
 app.use(express.urlencoded({ extended: false }));
+
+// session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "replace-with-strong-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 3600000 }, // 1 hour
+  })
+);
+
+// serve static files from /public
 app.use(express.static(path.join(__dirname, "public")));
 
+// helper to get a DB connection
 async function getDb() {
   return mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
+    // enable TLS if required by Azure
+    ssl: { rejectUnauthorized: true },
   });
 }
 
-// Health endpoint
-app.get("/health", (_, res) => res.send("OK"));
+// Health check
+app.get("/health", (_, res) => res.status(200).send("OK"));
 
-// Dashboard
+// Dashboard (default page)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-// Register & Login pages
-app.get("/register", (_, res) => {
+// Registration page
+app.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "public/register.html"));
 });
-app.get("/login", (_, res) => {
+
+// Login page
+app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public/login.html"));
 });
 
-// Shopping page
+// Shopping page (protected)
 app.get("/shopping", (req, res) => {
+  if (!req.session.userEmail) {
+    return res.redirect("/login");
+  }
   res.sendFile(path.join(__dirname, "public/shopping.html"));
 });
 
-// Handle registration
+// POST /register
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).send("Email & password required");
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required.");
+  }
 
   const hash = await bcrypt.hash(password, 10);
   const db = await getDb();
-
   try {
-    await db.execute("INSERT INTO users(email, password_hash) VALUES(?, ?)", [
+    await db.execute("INSERT INTO users (email, password_hash) VALUES (?, ?)", [
       email,
       hash,
     ]);
-    // Redirect with a flag for the popup
+    // on success, redirect to login with a flag
     res.redirect("/login?registered=1");
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
-      res.status(409).send("Email already registered");
+      res.status(409).send("That email is already registered.");
     } else {
       console.error(err);
-      res.status(500).send("Server error");
+      res.status(500).send("Server error.");
     }
   } finally {
     await db.end();
   }
 });
 
-// Handle login
+// POST /login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).send("Email & password required");
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required.");
+  }
 
   const db = await getDb();
   try {
@@ -78,24 +102,34 @@ app.post("/login", async (req, res) => {
       "SELECT password_hash FROM users WHERE email = ?",
       [email]
     );
-    if (
-      !rows.length ||
-      !(await bcrypt.compare(password, rows[0].password_hash))
-    ) {
-      return res.status(401).send("Invalid email or password");
+    if (!rows.length) {
+      return res.status(401).send("Invalid email or password.");
     }
-    // On success, redirect to shopping with the email in query
-    res.redirect(`/shopping?email=${encodeURIComponent(email)}`);
+    const match = await bcrypt.compare(password, rows[0].password_hash);
+    if (!match) {
+      return res.status(401).send("Invalid email or password.");
+    }
+
+    // store user in session
+    req.session.userEmail = email;
+    res.redirect("/shopping");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).send("Server error.");
   } finally {
     await db.end();
   }
 });
 
-// 404 catch-all
-app.use((_, res) => res.status(404).send("Page not found"));
+// Logout endpoint
+app.post("/logout", (req, res) => {
+  req.session.destroy(() => res.redirect("/"));
+});
+
+// 404 fallback
+app.use((_, res) => res.status(404).send("Page not found."));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(port, () => {
+  console.log(`Listening on port ${port}...`);
+});

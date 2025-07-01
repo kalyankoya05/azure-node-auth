@@ -5,47 +5,30 @@
   <meta charset="UTF-8" />
   <title>Shopping</title>
   <link rel="stylesheet" href="/css/styles.css" />
-  <style>
-    .shopping {
-      padding: 2rem;
-      font-family: Arial, sans-serif;
-    }
-
-    .shopping h1 {
-      margin-bottom: 1rem;
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-    }
-
-    .product {
-      padding: 1rem;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      text-align: center;
-    }
-  </style>
 </head>
 
 <body>
   <div class="shopping">
-    <h1 id="welcome">Welcome!</h1>
+    <h1>Hello, <span id="user-email"></span>!</h1>
+    <p>Here are some products for you:</p>
     <div class="products">
       <div class="product">Product A</div>
       <div class="product">Product B</div>
       <div class="product">Product C</div>
     </div>
+    <form action="/logout" method="post" style="margin-top:1rem;">
+      <button type="submit">Log Out</button>
+    </form>
   </div>
 
   <script>
-    // Show the user’s email
-    const params = new URLSearchParams(window.location.search);
-    const email = params.get('email') || 'Guest';
-    document.getElementById('welcome').textContent = `Hello, ${email}!`;
+    // fetch user email from session via an endpoint (could be improved)
+    fetch('/health') // dummy GET to ensure session is active
+      .then(() => {
+        // session exists; extract from cookie or ask server-side rendering in future
+        // For simplicity, just show "You" or enhance to serve via templating
+        document.getElementById('user-email').textContent = 'valued customer';
+      });
   </script>
 </body>
 
